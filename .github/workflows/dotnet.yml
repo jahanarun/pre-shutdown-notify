@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     env:
       BUILD_CONFIGURATION: Mon
     steps:
@@ -25,7 +25,7 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Publish
-      run: dotnet publish --configuration ${{ env.BUILD_CONFIGURATION }} --output .output
+      run: dotnet publish --configuration ${{ env.BUILD_CONFIGURATION }} --output .output -p:PublishReadyToRun=true
     - name: Copy script files
       run: |
         cp scripts/* .output

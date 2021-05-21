@@ -15,7 +15,6 @@ namespace pre_shutdown_notify
             return await Parser.Default.ParseArguments<CommandLineOptions>(args)
                 .MapResult(async (opts) =>
                 {
-                    // await CreateHostBuilder(args, opts).Build().RunAsync();
                     var builder = CreateHostBuilder(args, opts);
                     if (opts.IsConsole)
                     {

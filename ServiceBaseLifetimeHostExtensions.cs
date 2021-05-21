@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace pre_shutdown_notify
+namespace preshutdownnotify
 {
     public static class ServiceBaseLifetimeHostExtensions
     {

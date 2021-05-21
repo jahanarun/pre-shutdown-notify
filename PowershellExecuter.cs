@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace pre_shutdown_notify
+namespace preshutdownnotify
 {
     internal class PowershellExecuter : IHostedService
     {

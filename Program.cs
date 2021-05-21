@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging.EventLog;
 using System.Threading.Tasks;
 using CommandLine;
 
-namespace pre_shutdown_notify
+namespace preshutdownnotify
 {
     class Program
     {

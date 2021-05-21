@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace pre_shutdown_notify
+namespace preshutdownnotify
 {
     public class ServiceBaseLifetime : ServiceBase, IHostLifetime
     {

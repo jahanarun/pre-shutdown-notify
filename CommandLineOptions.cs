@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using CommandLine;
 
-namespace pre_shutdown_notify
+namespace preshutdownnotify
 {
     public class CommandLineOptions
     {

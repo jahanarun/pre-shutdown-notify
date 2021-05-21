@@ -19,7 +19,7 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore --runtime win-x64
     - name: Build
       run: dotnet build --no-restore  --configuration ${{ env.BUILD_CONFIGURATION }} --runtime win-x64
     - name: Test

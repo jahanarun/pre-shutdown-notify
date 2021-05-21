@@ -39,12 +39,10 @@ If (-not $foldercheck){
     New-Item -Path $despath -ItemType Directory
 }
 
-
-
-Copy-Item -Path ".\*.exe" -Destination "$despath" -force
-Copy-Item -Path ".\*.dll" -Destination "$despath" -force
-copy-item -path ".\*.pdb"  -Destination "$despath" -force
-Copy-Item -Path ".\the-script-to-run-on-preshutdown.ps1" -Destination "$despath" -force
+$sourcePath = "."
+Get-ChildItem -Path $sourcePath | % { 
+  Copy-Item $_.fullname "$despath" -Recurse -Force -Exclude @("install.ps1") 
+}
 
 $SCpath = $despath
 

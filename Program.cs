@@ -22,7 +22,7 @@ namespace preshutdownnotify
                     }
                     else
                     {
-                        await builder.RunAsServiceAsync();
+                        await builder.Build().RunAsync();
                     }
                     return 0;
                 },

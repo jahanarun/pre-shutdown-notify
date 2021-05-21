@@ -9,7 +9,7 @@
   <PropertyGroup>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
-    <!-- <RuntimeIdentifier>win-x64</RuntimeIdentifier> -->
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
     <PublishTrimmed>true</PublishTrimmed>
     <!-- <PublishReadyToRun>true</PublishReadyToRun> -->
   </PropertyGroup>

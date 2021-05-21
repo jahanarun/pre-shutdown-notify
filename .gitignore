@@ -704,3 +704,4 @@ tests/Cat.ProductsSearch.PerformanceTests/perf-reports.*
 
 .publish
 .tools
+.output

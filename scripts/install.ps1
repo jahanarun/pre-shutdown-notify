@@ -41,12 +41,11 @@ If (-not $foldercheck){
 
 
 
-Copy-Item -Path ".\preshutdownnotify.exe" -Destination "$despath" -force
-copy-item -path ".\preshutdownnotify.exe.config"  -Destination "$despath" -force
-copy-item -path ".\preshutdownnotify.pdb"  -Destination "$despath" -force
-Copy-Item -Path ".\servicesettingsscript_v1.ps1" -Destination "$despath" -force
+Copy-Item -Path ".\pre-shutdown-notify.exe" -Destination "$despath" -force
+copy-item -path ".\pre-shutdown-notify.pdb"  -Destination "$despath" -force
+Copy-Item -Path ".\the-script-to-run-on-preshutdown.ps1" -Destination "$despath" -force
 
 $SCpath = $despath
 
 
-Invoke-Expression -Command 'sc.exe create preshutdownnotify DisplayName="PreShutdown Notification Service" binpath="C:\Program Files\preshutdownnotify\preshutdownnotify.exe" type=own start=auto'
+Invoke-Expression -Command 'sc.exe create preshutdownnotify DisplayName="Pre-shutdown Notification Service" binpath="C:\Program Files\preshutdownnotify\preshutdownnotify.exe" type=own start=auto'

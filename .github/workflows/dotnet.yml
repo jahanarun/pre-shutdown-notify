@@ -1,0 +1,43 @@
+name: .NET
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      BUILD_CONFIGURATION: Mon
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Publish
+      run: dotnet publish --configuration ${{ env.BUILD_CONFIGURATION }} --output .output
+    - name: Copy script files
+      uses: canastro/copy-action@0.0.2
+      with:
+        source: .output/scripts/*
+        target: .output/artifact
+    - name: Copy binaries
+      uses: canastro/copy-action@0.0.2
+      with:
+        source: .output/pre-shutdown-notify*
+        target: .output/artifact
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.2.3
+      with:
+        path: .output/artifact/**
+        if-no-files-found: error

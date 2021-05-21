@@ -20,20 +20,25 @@ namespace preshutdownnotify
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+
+        }
+
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
             string path;
 
             if (Path.IsPathFullyQualified(opts.Path))
             {
-                Console.WriteLine($"opt.Path: {opts.Path}");
+                logger.LogInformation($"opt.Path: {opts.Path}");
                 path = opts.Path;
             }
             else
             {
-                Console.WriteLine($"AppContext: {AppContext.BaseDirectory}");
+                logger.LogInformation($"AppContext: {AppContext.BaseDirectory}");
                 path = Path.Combine(AppContext.BaseDirectory, opts.Path);
             }
 
-            Console.WriteLine($"Final Path: {path}");
+            logger.LogInformation($"Final Path: {path}");
             using var ps = PowerShell.Create();
 
             var scriptContents = File.ReadAllText(path);
@@ -47,19 +52,13 @@ namespace preshutdownnotify
             // execute the script and await the result.
             var pipelineObjects = await ps.InvokeAsync().ConfigureAwait(false);
 
-            Console.WriteLine("Completed!!!");
+            logger.LogInformation("Completed!!!");
 
             // print the resulting pipeline objects to the console.
             foreach (var item in pipelineObjects)
             {
                 logger.LogInformation(item.BaseObject.ToString());
             }
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            Console.WriteLine("Finished!!!");
-            return Task.CompletedTask;
         }
     }
 }

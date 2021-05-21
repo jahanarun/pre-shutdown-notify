@@ -25,7 +25,7 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Publish
-      run: dotnet publish --configuration ${{ env.BUILD_CONFIGURATION }} --output .output -p:PublishReadyToRun=true
+      run: dotnet publish --configuration ${{ env.BUILD_CONFIGURATION }} --output .output
     - name: Copy script files
       run: |
         cp scripts/* .output

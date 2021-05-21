@@ -14,17 +14,12 @@
     <!-- <PublishReadyToRun>true</PublishReadyToRun> -->
   </PropertyGroup>
 
+  <PropertyGroup>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="5.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-   <Content Include="scripts\the-script-to-run-on-preshutdown.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>  
-   <Content Include="scripts\install.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>  
   </ItemGroup>
 </Project>

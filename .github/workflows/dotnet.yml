@@ -26,12 +26,11 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish
       run: dotnet publish --configuration ${{ env.BUILD_CONFIGURATION }} --output .output
-    - name: Copy artifact files
+    - name: Copy script files
       run: |
-        mkdir -p .output/artifact && cp .output/scripts/* .output/artifact
-        cp .output/pre-shutdown-notify* .output/artifact
+        cp scripts/* .output
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.3
       with:
-        path: .output/artifact/**
+        path: .output/**
         if-no-files-found: error

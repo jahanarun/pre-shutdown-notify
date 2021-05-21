@@ -41,8 +41,9 @@ If (-not $foldercheck){
 
 
 
-Copy-Item -Path ".\pre-shutdown-notify.exe" -Destination "$despath" -force
-copy-item -path ".\pre-shutdown-notify.pdb"  -Destination "$despath" -force
+Copy-Item -Path ".\*.exe" -Destination "$despath" -force
+Copy-Item -Path ".\*.dll" -Destination "$despath" -force
+copy-item -path ".\*.pdb"  -Destination "$despath" -force
 Copy-Item -Path ".\the-script-to-run-on-preshutdown.ps1" -Destination "$despath" -force
 
 $SCpath = $despath

@@ -26,16 +26,10 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish
       run: dotnet publish --configuration ${{ env.BUILD_CONFIGURATION }} --output .output
-    - name: Copy script files
-      uses: canastro/copy-action@0.0.2
-      with:
-        source: .output/scripts/*
-        target: .output/artifact
-    - name: Copy binaries
-      uses: canastro/copy-action@0.0.2
-      with:
-        source: .output/pre-shutdown-notify*
-        target: .output/artifact
+    - name: Copy artifact files
+      run: |
+        mkdir -p .output/artifact && cp .output/scripts/* .output/artifact
+        cp .output/pre-shutdown-notify* .output/artifact
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.3
       with:

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
 using System.Threading;
@@ -8,37 +9,31 @@ using Microsoft.Extensions.Logging;
 
 namespace preshutdownnotify
 {
-    internal class PowershellExecuter : IHostedService
+    internal class PowershellExecuter
     {
         private readonly CommandLineOptions opts;
-        private readonly ILogger<PowershellExecuter> logger;
 
-        public PowershellExecuter(CommandLineOptions opts, ILogger<PowershellExecuter> logger)
+        public PowershellExecuter(CommandLineOptions opts)
         {
             this.opts = opts;
-            this.logger = logger;
-        }
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public async Task ExecuteAsync()
         {
             string path;
 
             if (Path.IsPathFullyQualified(opts.Path))
             {
-                logger.LogInformation($"opt.Path: {opts.Path}");
+                EventLog.WriteEntry("preshutdownnotify", $"opt.Path: {opts.Path}", EventLogEntryType.Information, 12100, short.MaxValue);
                 path = opts.Path;
             }
             else
             {
-                logger.LogInformation($"AppContext: {AppContext.BaseDirectory}");
+                EventLog.WriteEntry("preshutdownnotify", $"AppContext: {AppContext.BaseDirectory}", EventLogEntryType.Information, 12100, short.MaxValue);
                 path = Path.Combine(AppContext.BaseDirectory, opts.Path);
             }
 
-            logger.LogInformation($"Final Path: {path}");
+            EventLog.WriteEntry("preshutdownnotify", $"Final Path: {path}", EventLogEntryType.Information, 12100, short.MaxValue);
             using var ps = PowerShell.Create();
 
             var scriptContents = File.ReadAllText(path);
@@ -52,12 +47,12 @@ namespace preshutdownnotify
             // execute the script and await the result.
             var pipelineObjects = await ps.InvokeAsync().ConfigureAwait(false);
 
-            logger.LogInformation("Completed!!!");
+            EventLog.WriteEntry("preshutdownnotify", "Completed!!!", EventLogEntryType.Information, 12100, short.MaxValue);
 
             // print the resulting pipeline objects to the console.
             foreach (var item in pipelineObjects)
             {
-                logger.LogInformation(item.BaseObject.ToString());
+                EventLog.WriteEntry("preshutdownnotify", item.BaseObject.ToString(), EventLogEntryType.Information, 12100, short.MaxValue);
             }
         }
     }

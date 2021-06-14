@@ -49,6 +49,8 @@ namespace preshutdownnotify
             try
             {
                 EventLog.WriteEntry("preshutdownnotify", "preshutdownnotify service stopping", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", $"Executing stopping action", EventLogEntryType.Information, 12100, short.MaxValue);
+                new PowershellExecuter(opts).ExecuteAsync().GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -60,11 +62,13 @@ namespace preshutdownnotify
         {
             try
             {
+                EventLog.WriteEntry("preshutdownnotify", $"Code :{command}", EventLogEntryType.Information, 12100, short.MaxValue);
+
                 if (command == SERVICECONTROLPRESHUTDOWN)
                 {
                     new PowershellExecuter(opts).ExecuteAsync().GetAwaiter().GetResult();
                     Thread.Sleep(5000);
-                    EventLog.WriteEntry("preshutdownnotify", "StoppedVm's in preshutdown notification", EventLogEntryType.Information, 12100, short.MaxValue);
+                    EventLog.WriteEntry("preshutdownnotify", $"Completed Custom Command {command}", EventLogEntryType.Information, 12100, short.MaxValue);
                 }
                 else
                 {

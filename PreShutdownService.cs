@@ -55,6 +55,7 @@ namespace preshutdownnotify
             catch (Exception e)
             {
                 EventLog.WriteEntry("preshutdownnotify", e.Message, EventLogEntryType.Error, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", e.StackTrace, EventLogEntryType.Error, 12100, short.MaxValue);
             }
         }
 

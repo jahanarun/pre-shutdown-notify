@@ -40,20 +40,47 @@ namespace preshutdownnotify
 
             // specify the script code to run.
             ps.AddScript(scriptContents);
+            // ps.Streams.Error.ReadAll
 
             // specify the parameters to pass into the script.
             // ps.AddParameters(scriptParameters);
 
             // execute the script and await the result.
-            var pipelineObjects = await ps.InvokeAsync().ConfigureAwait(false);
+            ps.Streams.Error.DataAdded += (sender, args) =>
+            {
+                ErrorRecord err = ((PSDataCollection<ErrorRecord>)sender)[args.Index];
+                EventLog.WriteEntry("preshutdownnotify", $"ERROR: {err}", EventLogEntryType.Information, 12100, short.MaxValue);
+            };
 
-            EventLog.WriteEntry("preshutdownnotify", "Completed!!!", EventLogEntryType.Information, 12100, short.MaxValue);
+            ps.Streams.Warning.DataAdded += (sender, args) =>
+            {
+                WarningRecord warning = ((PSDataCollection<WarningRecord>)sender)[args.Index];
+                EventLog.WriteEntry("preshutdownnotify", $"WARNING: {warning}", EventLogEntryType.Information, 12100, short.MaxValue);
+            };
+            var pipelineObjects = await ps.InvokeAsync().ConfigureAwait(false);
+            pipelineObjects.DataAdded += (sender, args) =>
+            {
+                PSObject output = ((PSDataCollection<PSObject>)sender)[args.Index];
+                EventLog.WriteEntry("preshutdownnotify", $"OUTPUT: {output}", EventLogEntryType.Information, 12100, short.MaxValue);
+            };
+
 
             // print the resulting pipeline objects to the console.
             foreach (var item in pipelineObjects)
             {
                 EventLog.WriteEntry("preshutdownnotify", item.BaseObject.ToString(), EventLogEntryType.Information, 12100, short.MaxValue);
             }
+            if (ps.Streams.Error.Count > 0)
+            {
+                EventLog.WriteEntry("preshutdownnotify", $"Error Count: {ps.Streams.Error.Count}", EventLogEntryType.Information, 12100, short.MaxValue);
+                foreach (var error in ps.Streams.Error.ReadAll())
+                {
+                    EventLog.WriteEntry("preshutdownnotify", $"Error Message: {error.ErrorDetails.Message}", EventLogEntryType.Information, 12100, short.MaxValue);
+                }
+                // error records were written to the error stream.
+                // Do something with the error
+            }
+            EventLog.WriteEntry("preshutdownnotify", "Completed!!!", EventLogEntryType.Information, 12100, short.MaxValue);
         }
     }
 }

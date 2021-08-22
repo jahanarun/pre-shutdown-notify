@@ -3,10 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace preshutdownnotify
 {
@@ -19,19 +16,26 @@ namespace preshutdownnotify
             this.opts = opts;
         }
 
-        public async Task ExecuteAsync()
+        public Task RunStartScript()
         {
-            string path;
+            return ExecuteAsync(opts.StartScriptPath);
+        }
 
-            if (Path.IsPathFullyQualified(opts.Path))
+        public Task RunStopScript()
+        {
+            return ExecuteAsync(opts.StopScriptPath);
+        }
+
+        private static async Task ExecuteAsync(string path)
+        {
+            if (Path.IsPathFullyQualified(path))
             {
-                EventLog.WriteEntry("preshutdownnotify", $"opt.Path: {opts.Path}", EventLogEntryType.Information, 12100, short.MaxValue);
-                path = opts.Path;
+                EventLog.WriteEntry("preshutdownnotify", $"opt.Path: {path}", EventLogEntryType.Information, 12100, short.MaxValue);
             }
             else
             {
                 EventLog.WriteEntry("preshutdownnotify", $"AppContext: {AppContext.BaseDirectory}", EventLogEntryType.Information, 12100, short.MaxValue);
-                path = Path.Combine(AppContext.BaseDirectory, opts.Path);
+                path = Path.Combine(AppContext.BaseDirectory, path);
             }
 
             EventLog.WriteEntry("preshutdownnotify", $"Final Path: {path}", EventLogEntryType.Information, 12100, short.MaxValue);

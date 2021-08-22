@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.ServiceProcess;
-using System.Threading;
 
 namespace preshutdownnotify
 {
@@ -37,6 +36,7 @@ namespace preshutdownnotify
             try
             {
                 EventLog.WriteEntry("preshutdownnotify", "preshutdownnotify service starting", EventLogEntryType.Information, 12100, short.MaxValue);
+                new PowershellExecuter(opts).RunStartScript().GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -49,8 +49,7 @@ namespace preshutdownnotify
             try
             {
                 EventLog.WriteEntry("preshutdownnotify", "preshutdownnotify service stopping", EventLogEntryType.Information, 12100, short.MaxValue);
-                EventLog.WriteEntry("preshutdownnotify", $"Executing stopping action", EventLogEntryType.Information, 12100, short.MaxValue);
-                new PowershellExecuter(opts).ExecuteAsync().GetAwaiter().GetResult();
+                new PowershellExecuter(opts).RunStopScript().GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -67,8 +66,7 @@ namespace preshutdownnotify
 
                 if (command == SERVICECONTROLPRESHUTDOWN)
                 {
-                    new PowershellExecuter(opts).ExecuteAsync().GetAwaiter().GetResult();
-                    Thread.Sleep(5000);
+                    new PowershellExecuter(opts).RunStopScript().GetAwaiter().GetResult();
                     EventLog.WriteEntry("preshutdownnotify", $"Completed Custom Command {command}", EventLogEntryType.Information, 12100, short.MaxValue);
                 }
                 else

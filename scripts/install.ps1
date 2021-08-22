@@ -40,7 +40,7 @@ If (-not $foldercheck){
 }
 
 $sourcePath = "."
-Get-ChildItem -Path $sourcePath | % { 
+Get-ChildItem -Path $sourcePath | ForEach-Object { 
   Copy-Item $_.fullname "$despath" -Recurse -Force -Exclude @("install.ps1") 
 }
 

@@ -40,10 +40,18 @@ namespace preshutdownnotify
 
             EventLog.WriteEntry("preshutdownnotify", $"Final Path: {path}", EventLogEntryType.Information, 12100, short.MaxValue);
 
-            var initial = InitialSessionState.CreateDefault();
-            initial.ImportPSModule(new string[] { "Hyper-V" });
-            Runspace runspace = RunspaceFactory.CreateRunspace(initial);
+            var initialState = InitialSessionState.CreateDefault();
+            initialState.ImportPSModule(new string[] { "Hyper-V" });
+            initialState.ThrowOnRunspaceOpenError = true;
+            Runspace runspace = RunspaceFactory.CreateRunspace(initialState);
             runspace.Open();
+
+            var moduleError = runspace.SessionStateProxy.PSVariable.GetValue("Error");
+            if (!string.IsNullOrEmpty(moduleError.ToString()))
+            {
+                EventLog.WriteEntry("preshutdownnotify", $"Module error: {moduleError}", EventLogEntryType.Information, 12100, short.MaxValue);
+            }
+
 
             using var ps = PowerShell.Create();
             ps.Runspace = runspace;

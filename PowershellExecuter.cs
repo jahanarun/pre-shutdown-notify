@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace preshutdownnotify
@@ -14,6 +15,7 @@ namespace preshutdownnotify
         public PowershellExecuter(CommandLineOptions opts)
         {
             this.opts = opts;
+            EventLog.WriteEntry("preshutdownnotify", $"opt: {JsonSerializer.Serialize(opts)}", EventLogEntryType.Information, 12100, short.MaxValue);
         }
 
         public Task RunStartScript()
@@ -49,7 +51,7 @@ namespace preshutdownnotify
             var moduleError = runspace.SessionStateProxy.PSVariable.GetValue("Error");
             if (!string.IsNullOrEmpty(moduleError.ToString()))
             {
-                EventLog.WriteEntry("preshutdownnotify", $"Module error: {moduleError}", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", $"Module error: {moduleError}", EventLogEntryType.Error, 12101, short.MaxValue);
             }
 
 
@@ -69,7 +71,7 @@ namespace preshutdownnotify
             ps.Streams.Error.DataAdded += (sender, args) =>
             {
                 ErrorRecord err = ((PSDataCollection<ErrorRecord>)sender)[args.Index];
-                EventLog.WriteEntry("preshutdownnotify", $"ERROR: {err}", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", $"ERROR: {err}", EventLogEntryType.Error, 12100, short.MaxValue);
             };
 
             ps.Streams.Warning.DataAdded += (sender, args) =>

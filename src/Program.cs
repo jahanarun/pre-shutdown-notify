@@ -15,7 +15,7 @@ namespace preshutdownnotify
         {
 
             return await Parser.Default.ParseArguments<CommandLineOptions>(args)
-                .MapResult(async (opts) =>
+                .MapResult((opts) =>
                 {
 
                     ServiceBase[] servicesToRun;
@@ -24,7 +24,7 @@ namespace preshutdownnotify
                         new PreShutdownService(opts)
                     };
                     ServiceBase.Run(servicesToRun);
-                    return 0;
+                    return Task.FromResult(0);
                 },
                 errs => Task.FromResult(-1)); // Invalid
 

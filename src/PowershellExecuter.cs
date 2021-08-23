@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace preshutdownnotify
 {
-    internal class PowershellExecuter
+    public class PowershellExecuter
     {
         private readonly CommandLineOptions opts;
 
@@ -32,26 +33,29 @@ namespace preshutdownnotify
         {
             if (Path.IsPathFullyQualified(path))
             {
-                EventLog.WriteEntry("preshutdownnotify", $"opt.Path: {path}", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", $"opt.Path: {path}", EventLogEntryType.Information, 12101, short.MaxValue);
             }
             else
             {
-                EventLog.WriteEntry("preshutdownnotify", $"AppContext: {AppContext.BaseDirectory}", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", $"AppContext: {AppContext.BaseDirectory}", EventLogEntryType.Information, 12102, short.MaxValue);
                 path = Path.Combine(AppContext.BaseDirectory, path);
             }
 
-            EventLog.WriteEntry("preshutdownnotify", $"Final Path: {path}", EventLogEntryType.Information, 12100, short.MaxValue);
+            EventLog.WriteEntry("preshutdownnotify", $"Final Path: {path}", EventLogEntryType.Information, 12103, short.MaxValue);
 
             var initialState = InitialSessionState.CreateDefault();
             initialState.ImportPSModule(new string[] { "Hyper-V" });
             initialState.ThrowOnRunspaceOpenError = true;
-            Runspace runspace = RunspaceFactory.CreateRunspace(initialState);
+            using Runspace runspace = RunspaceFactory.CreateRunspace(initialState);
             runspace.Open();
 
-            var moduleError = runspace.SessionStateProxy.PSVariable.GetValue("Error");
-            if (!string.IsNullOrEmpty(moduleError.ToString()))
+            var moduleErrors = runspace.SessionStateProxy.PSVariable.GetValue("Error") as ArrayList;
+            if (moduleErrors.Count > 0)
             {
-                EventLog.WriteEntry("preshutdownnotify", $"Module error: {moduleError}", EventLogEntryType.Error, 12101, short.MaxValue);
+                foreach (var moduleError in moduleErrors)
+                {
+                    EventLog.WriteEntry("preshutdownnotify", $"Module error: {moduleError}", EventLogEntryType.Error, 12104, short.MaxValue);
+                }
             }
 
 
@@ -71,38 +75,38 @@ namespace preshutdownnotify
             ps.Streams.Error.DataAdded += (sender, args) =>
             {
                 ErrorRecord err = ((PSDataCollection<ErrorRecord>)sender)[args.Index];
-                EventLog.WriteEntry("preshutdownnotify", $"ERROR: {err}", EventLogEntryType.Error, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", $"ERROR: {err}", EventLogEntryType.Error, 12105, short.MaxValue);
             };
 
             ps.Streams.Warning.DataAdded += (sender, args) =>
             {
                 WarningRecord warning = ((PSDataCollection<WarningRecord>)sender)[args.Index];
-                EventLog.WriteEntry("preshutdownnotify", $"WARNING: {warning}", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", $"WARNING: {warning}", EventLogEntryType.Information, 12106, short.MaxValue);
             };
             var pipelineObjects = await ps.InvokeAsync().ConfigureAwait(false);
             pipelineObjects.DataAdded += (sender, args) =>
             {
                 PSObject output = ((PSDataCollection<PSObject>)sender)[args.Index];
-                EventLog.WriteEntry("preshutdownnotify", $"OUTPUT: {output}", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", $"OUTPUT: {output}", EventLogEntryType.Information, 12107, short.MaxValue);
             };
 
 
             // print the resulting pipeline objects to the console.
             foreach (var item in pipelineObjects)
             {
-                EventLog.WriteEntry("preshutdownnotify", item.BaseObject.ToString(), EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", item.BaseObject.ToString(), EventLogEntryType.Information, 12108, short.MaxValue);
             }
             if (ps.Streams.Error.Count > 0)
             {
-                EventLog.WriteEntry("preshutdownnotify", $"Error Count: {ps.Streams.Error.Count}", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", $"Error Count: {ps.Streams.Error.Count}", EventLogEntryType.Information, 12109, short.MaxValue);
                 foreach (var error in ps.Streams.Error.ReadAll())
                 {
-                    EventLog.WriteEntry("preshutdownnotify", $"Error Message: {error.ErrorDetails.Message}", EventLogEntryType.Information, 12100, short.MaxValue);
+                    EventLog.WriteEntry("preshutdownnotify", $"Error Message: {error.Exception.Message ?? error.ErrorDetails.Message}", EventLogEntryType.Information, 12110, short.MaxValue);
                 }
                 // error records were written to the error stream.
                 // Do something with the error
             }
-            EventLog.WriteEntry("preshutdownnotify", "Completed!!!", EventLogEntryType.Information, 12100, short.MaxValue);
+            EventLog.WriteEntry("preshutdownnotify", "Completed!!!", EventLogEntryType.Information, 12111, short.MaxValue);
         }
     }
 }

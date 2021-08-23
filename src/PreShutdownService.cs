@@ -22,9 +22,10 @@ namespace preshutdownnotify
                     int xi = v;
                     serviceAcceptedCommands.SetValue(this, xi | SERVICEACCEPTPRESHUTDOWN);
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    EventLog.WriteEntry("preshutdownnotify", ex.Message, EventLogEntryType.Error, 12100, short.MaxValue);
+                    EventLog.WriteEntry("preshutdownnotify", e.Message, EventLogEntryType.Error, 12101, short.MaxValue);
+                    EventLog.WriteEntry("preshutdownnotify", e.StackTrace, EventLogEntryType.Error, 12201, short.MaxValue);
                 }
             }
 
@@ -35,12 +36,13 @@ namespace preshutdownnotify
         {
             try
             {
-                EventLog.WriteEntry("preshutdownnotify", "preshutdownnotify service starting", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", "preshutdownnotify service starting", EventLogEntryType.Information, 12300, short.MaxValue);
                 new PowershellExecuter(opts).RunStartScript().GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("preshutdownnotify", e.Message, EventLogEntryType.Error, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", e.Message, EventLogEntryType.Error, 12202, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", e.StackTrace, EventLogEntryType.Error, 12202, short.MaxValue);
             }
         }
 
@@ -48,13 +50,13 @@ namespace preshutdownnotify
         {
             try
             {
-                EventLog.WriteEntry("preshutdownnotify", "preshutdownnotify service stopping", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", "preshutdownnotify service stopping", EventLogEntryType.Information, 12301, short.MaxValue);
                 new PowershellExecuter(opts).RunStopScript().GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("preshutdownnotify", e.Message, EventLogEntryType.Error, 12100, short.MaxValue);
-                EventLog.WriteEntry("preshutdownnotify", e.StackTrace, EventLogEntryType.Error, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", e.Message, EventLogEntryType.Error, 12204, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", e.StackTrace, EventLogEntryType.Error, 12204, short.MaxValue);
             }
         }
 
@@ -62,12 +64,12 @@ namespace preshutdownnotify
         {
             try
             {
-                EventLog.WriteEntry("preshutdownnotify", $"Code :{command}", EventLogEntryType.Information, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", $"Code :{command}", EventLogEntryType.Information, 12305, short.MaxValue);
 
                 if (command == SERVICECONTROLPRESHUTDOWN)
                 {
                     new PowershellExecuter(opts).RunStopScript().GetAwaiter().GetResult();
-                    EventLog.WriteEntry("preshutdownnotify", $"Completed Custom Command {command}", EventLogEntryType.Information, 12100, short.MaxValue);
+                    EventLog.WriteEntry("preshutdownnotify", $"Completed Custom Command {command}", EventLogEntryType.Information, 12305, short.MaxValue);
                 }
                 else
                 {
@@ -76,7 +78,8 @@ namespace preshutdownnotify
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("preshutdownnotify", e.Message, EventLogEntryType.Error, 12100, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", e.Message, EventLogEntryType.Error, 12205, short.MaxValue);
+                EventLog.WriteEntry("preshutdownnotify", e.StackTrace, EventLogEntryType.Error, 12205, short.MaxValue);
             }
         }
     }

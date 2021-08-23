@@ -20,11 +20,7 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore --runtime ${{ env.RUNTIME }}
-    - name: Build test
-      run: dotnet build .\test\pre-shutdown-notify.Test.csproj
-    - name: Run Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet restore .\src\preshutdownnotify.csproj --runtime ${{ env.RUNTIME }}
     - name: Create artifact
       run: dotnet publish .\src\preshutdownnotify.csproj --output .output --configuration ${{ env.BUILD_CONFIGURATION }} --runtime ${{ env.RUNTIME }} --self-contained
     - name: Copy script files
